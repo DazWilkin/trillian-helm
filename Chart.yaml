@@ -1,0 +1,13 @@
+name: Trillian
+description: Google Trillian
+version: 0.0.1
+kubeVersion: ">=1.2.0"
+keywords:
+  - google
+  - trillian
+home: https://github.com/google/trillian
+sources:
+  - https://gcr.io/dazwilkin-180601-trillian/
+maintainers:
+  - name: trillian
+    email: trillian@google.com

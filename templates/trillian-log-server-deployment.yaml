@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: trillian-log-server
+  name: trillian-log-server
+spec:
+  replicas: 4
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        heritage: {{ .Release.Service }}
+        release: {{ .Release.Name }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        app: {{ template "trillian.name" . }}
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: trillian-key
+      restartPolicy: Always
+      containers:
+      - name: {{ .Values.log-server.name }}
+        image: "{{ .Values.log-server.image.repository }}:{{ .Values.log-server.image.tag }}"
+        imagePullPolicy: {{ .Values.log-server.image.pullPolicy }}
+        args: [
+        "$(STORAGE_FLAG)",
+        "--storage_system=$(STORAGE_SYSTEM)",
+        "--quota_system=etcd",
+        "--etcd_servers=trillian-etcd-cluster-client:2379",
+        "--etcd_http_service=trillian-logserver-http",
+        "--rpc_endpoint=0.0.0.0:8090",
+        "--http_endpoint=0.0.0.0:8091",
+        "--tracing",
+        "--alsologtostderr"
+        ]
+        envFrom:
+          - configMapRef:
+              name: deploy-config
+        resources:
+          limits:
+            cpu: "1.0"
+          requests:
+            cpu: "0.4"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8091
+          failureThreshold: 3
+          periodSeconds: 30
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 8090
+          name: rpc
+        - containerPort: 8091
+          name: metrics
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+      - name: {{ .Values.prometheus.name }}
+        image: "{{ .Values.prometheus.image.repository }}:{{ .Values.prometheus.image.tag }}"
+        imagePullPolicy: {{ .Values.prometheus.image.pullPolicy }}
+        ports:
+          - name: profiler
+            containerPort: 6060
+        command:
+          - /monitor
+          - --stackdriver-prefix=custom.googleapis.com
+          - --source=logserver:http://localhost:8091/metrics
+          - --pod-id=$(POD_NAME)
+          - --namespace-id=$(POD_NAMESPACE)
+          - --metrics-resolution=5s
+        resources:
+          limits:
+            cpu: 20m
+          requests:
+            cpu: 20m
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
