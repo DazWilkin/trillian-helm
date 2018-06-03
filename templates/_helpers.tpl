@@ -14,3 +14,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Expand the registry host and registry project (may be "") 
+*/}}
+{{- define "registry.fullname" -}}
+{{- .Values.registry.host -}}
+{{ if .Values.registry.project }}/{{ .Values.registry.project }}{{ end }}
+{{- end -}}

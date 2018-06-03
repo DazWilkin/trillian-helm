@@ -1,19 +1,55 @@
 
-replicaCount: 1
-restartPolicy: Never
+gcp:
+  project:
+    id: ""
+    spanner:
+      instance: trillian-spanner
+      database: trillian-db
+
+registry: 
+  host: gcr.io
+  project: ""
+
+namespace:
+  name: default
+
+configmap:
+  name: deploy-config
+
+secret:
+  name: trillian-key
 
 # Evaluated by the post-install hook
 sleepyTime: "10"
 
-index: >-
-  <h1>Hello</h1>
-  <p>This is a test</p>
-
-log-server:
+logserver:
   name: trillian-log-server
+  replicas: 4
   image:
-    repository: gcr.io/dazwilkin-180601-trillian/log-server
+    name: log_server
     tag: 8e4c86bfbbfbee4ad65c3d03808814051323d500
+    #hash: sha256:0f03dce8efb704f8795903a054275e92216579103500eecceb01812ef70918f4
+    pullPolicy: IfNotPresent
+  service:
+    annotations: {}
+    clusterIP: ""
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    type: ClusterIP
+    port: 8888
+    nodePort: ""
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+
+logsigner:
+  name: trillian-log-signer
+  replicas: 2
+  image:
+    name: log_signer
+    tag: 8e4c86bfbbfbee4ad65c3d03808814051323d500
+    #hash: sha256:a6139304dd032cb767b43c003f3f1cde7e3c584512eab02e04e735b36cf02b03
     pullPolicy: IfNotPresent
   service:
     annotations: {}

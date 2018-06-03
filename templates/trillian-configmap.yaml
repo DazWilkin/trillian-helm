@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: deploy-config
-  namespace: default
+  name: {{ .Values.configmap.name }}
+  namespace: {{ .Values.namespace.name }}
 data:
   STORAGE_SYSTEM: cloud_spanner
-  STORAGE_FLAG: --cloudspanner_uri=projects/${PROJECT_NAME}/instances/trillian-spanner/databases/trillian-db
+  STORAGE_FLAG: --cloudspanner_uri=projects/{{ .Values.gcp.project.id }}/instances/{{ .Values.gcp.project.spanner.instance }}/databases/{{ .Values.gcp.project.spanner.database }}
   GOOGLE_APPLICATION_CREDENTIALS: /var/secrets/google/key.json
   SIGNER_DEQUEUE_BUCKET_FRACTION: "0.0078"
   SIGNER_BATCH_SIZE: "1800"
