@@ -29,21 +29,14 @@ helm init --service-account=tiller
 Chart assumes bulk of `/.create.sh` has been run:
 * Kubernetes cluster created and auth'd to Helm user
 * Cloud Spanner service enabled, instance created and DB provisioned
-* GCP Service Account created, IAM policy revise and..
+* GCP Service Account created, IAM policy revised and...
 * Kubernetes Secret created for the GCP Service Account
 * etc Operator deployed and Trillian (`trillian-etcd-cluster`) created
 * Helm is installed and Tiller is deployed to the cluster
 
-Clone this github repo but remain in the parent directory, you may dry-run the deployment to verify that it does what you expect:
+Clone this github repo but remain in the parent directory.
 
-**NB** `gcp.project.id` should be assigned to the Project ID of the Google Cloud Platform (GCP) project containing the Kubernetes cluster and the Cloud Spanner instance and database.
-
-**NB** `registry.project` should be assigned to the Project ID of the GCP project containing the Google Container Registry containing Trillian's Docker images. This *may* have the same value as `gcp.project.id`
-
-**NB** If your Docker images are elsewhere, you may specify the service using `registry.host` (e.g. `docker.io`) and leave `registry.project` unassigned to reference dockerhub.
-
-**NB** `${PROJECT_NAME}` back-references the environment variable used by Trillian's Kubernetes deployment (bash) scripts as defined in `config.sh`. 
-
+You may dry-run the deployment to verify that it does what you expect:
 
 ```
 helm install ./trillian-helm \
@@ -64,6 +57,14 @@ helm install ./trillian-helm \
 gcp.project.id=${PROJECT_NAME},\
 registry.project=${PROJECT_NAME}
 ```
+**NB** `gcp.project.id` should be assigned to the Project ID of the Google Cloud Platform (GCP) project containing the Kubernetes cluster and the Cloud Spanner instance and database.
+
+**NB** `registry.project` should be assigned to the Project ID of the GCP project containing the Google Container Registry containing Trillian's Docker images. This *may* have the same value as `gcp.project.id`
+
+**NB** If your Docker images are elsewhere, you may specify the service using `registry.host` (e.g. `docker.io`) and leave `registry.project` unassigned to reference dockerhub.
+
+**NB** `${PROJECT_NAME}` back-references the environment variable used by Trillian's Kubernetes deployment (bash) scripts as defined in `config.sh`. 
+
 You should expect to see an enumeration of the Kubernetes resources created by the Chart that resembles (!) this:
 ```
 NAME:   intentional-fish
