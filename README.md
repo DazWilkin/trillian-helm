@@ -1,7 +1,7 @@
 ## Trillian Helm (Experiment) ##
 
 **Description**
-: Prototype Helm Chart for Google [Trillian](github.com/google/trillian)
+: Prototype [Helm](https://github.com/kubernetes/helm) Chart for Google [Trillian](github.com/google/trillian)
 
 Extends the [Kubernetes Deployment](https://github.com/google/trillian/tree/master/examples/deployment/kubernetes) included in Trillian repo.
 
